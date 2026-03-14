@@ -1,7 +1,5 @@
 package com.example.testapp
 
-import com.example.testapp.getForegroundApp
-import com.example.testapp.TaskManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -12,8 +10,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.platform.LocalContext
-import com.example.testapp.WalletManager
-import com.example.testapp.UsageAnalyzer
 
 class MainActivity : ComponentActivity() {
 
@@ -98,10 +94,10 @@ fun TaskScreen() {
         TaskManager.tasks.forEach { task ->
             Spacer(modifier = Modifier.height(10.dp))
             Button(onClick = {
-                WalletManager.minutes += task.rewardMinutes
+                WalletManager.minutes += task.reward
                 refreshTrigger++
             }) {
-                Text("${task.title} (+${task.rewardMinutes} min)")
+                Text("${task.name} (+${task.reward} min)")
             }
         }
 

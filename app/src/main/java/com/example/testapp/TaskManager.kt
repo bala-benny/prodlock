@@ -7,11 +7,15 @@ data class Task(
 
 object TaskManager {
 
-    val tasks = listOf(
+    val tasks = mutableListOf(
         Task("Read 10 pages", 10),
         Task("Exercise for 10 minutes", 15),
         Task("Clean your desk", 5),
         Task("Solve 5 math problems", 20)
     )
+
+    fun addTask(name: String, reward: Int) {
+        tasks.add(Task(name, reward))
+    }
 
 }
