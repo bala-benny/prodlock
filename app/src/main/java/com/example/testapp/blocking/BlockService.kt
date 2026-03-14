@@ -9,6 +9,7 @@ import com.example.testapp.WalletManager
 class BlockService : AccessibilityService() {
 
     override fun onAccessibilityEvent(event: AccessibilityEvent) {
+        if (event.eventType != AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) return
 
         val packageName = event.packageName?.toString() ?: return
 

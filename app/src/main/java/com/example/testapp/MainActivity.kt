@@ -1,4 +1,5 @@
 package com.example.testapp
+
 import com.example.testapp.getForegroundApp
 import com.example.testapp.TaskManager
 import android.os.Bundle
@@ -11,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.platform.LocalContext
+import com.example.testapp.WalletManager
 
 class MainActivity : ComponentActivity() {
 
@@ -22,25 +24,17 @@ class MainActivity : ComponentActivity() {
             TaskScreen()
         }
     }
-    fun completeTask() {
-        WalletManager.minutes += 10
-    }
-    @Composable
-    fun TaskButton() {
-        Button(onClick = {
-            completeTask()
-        }) {
-            Text("Complete Task")
-        }
-    }
 }
 
 @Composable
 fun TaskScreen() {
 
-    var wallet by remember { mutableIntStateOf(0) }
+    // We use a trigger variable to force Compose to refresh when the WalletManager object changes
+    var refreshTrigger by remember { mutableIntStateOf(0) }
+    
     var currentApp by remember { mutableStateOf("Unknown") }
     val context = LocalContext.current
+    
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -48,14 +42,15 @@ fun TaskScreen() {
     ) {
 
         Text(
-            text = "Screen Time Wallet: $wallet minutes",
+            text = "Screen Time Wallet: ${WalletManager.minutes + refreshTrigger * 0}",
             style = MaterialTheme.typography.headlineMedium
         )
 
         Spacer(modifier = Modifier.height(40.dp))
 
         Button(onClick = {
-            wallet += 30
+            WalletManager.minutes += 30
+            refreshTrigger++ // Increment to trigger UI update
         }) {
             Text("Complete Task (+30 min)")
         }
@@ -63,8 +58,11 @@ fun TaskScreen() {
         Spacer(modifier = Modifier.height(20.dp))
 
         Button(onClick = {
-            if (wallet > 0) {
-                wallet -= 5
+            if (WalletManager.minutes > 0) {
+
+                WalletManager.minutes = maxOf(0, WalletManager.minutes - 5)
+
+                refreshTrigger++
             }
         }) {
             Text("Use App (-5 min)")
@@ -82,5 +80,3 @@ fun TaskScreen() {
         Text("Current App: $currentApp")
     }
 }
-
-
