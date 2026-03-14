@@ -1,7 +1,6 @@
 package com.example.testapp
 
 import com.example.testapp.getForegroundApp
-import com.example.testapp.TaskManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -12,14 +11,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.platform.LocalContext
-import com.example.testapp.WalletManager
 
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        TaskManager.addTask("Study", 30)
-        TaskManager.addTask("Workout", 20)
+
         setContent {
             TaskScreen()
         }
@@ -29,12 +26,13 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun TaskScreen() {
 
-    // We use a trigger variable to force Compose to refresh when the WalletManager object changes
+    // Used to force UI refresh when WalletManager changes
     var refreshTrigger by remember { mutableIntStateOf(0) }
-    
+
     var currentApp by remember { mutableStateOf("Unknown") }
+
     val context = LocalContext.current
-    
+
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -50,7 +48,7 @@ fun TaskScreen() {
 
         Button(onClick = {
             WalletManager.minutes += 30
-            refreshTrigger++ // Increment to trigger UI update
+            refreshTrigger++
         }) {
             Text("Complete Task (+30 min)")
         }
@@ -59,14 +57,13 @@ fun TaskScreen() {
 
         Button(onClick = {
             if (WalletManager.minutes > 0) {
-
-                WalletManager.minutes = maxOf(0, WalletManager.minutes - 5)
-
+                WalletManager.minutes -= 5
                 refreshTrigger++
             }
         }) {
             Text("Use App (-5 min)")
         }
+
         Spacer(modifier = Modifier.height(30.dp))
 
         Button(onClick = {
@@ -80,3 +77,4 @@ fun TaskScreen() {
         Text("Current App: $currentApp")
     }
 }
+

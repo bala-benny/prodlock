@@ -1,18 +1,17 @@
 package com.example.testapp
 
-import com.example.testapp.tasks.TaskModel
+data class Task(
+    val name: String,
+    val reward: Int
+)
 
 object TaskManager {
 
-    val tasks = mutableListOf<TaskModel>()
+    val tasks = listOf(
+        Task("Read 10 pages", 10),
+        Task("Exercise for 10 minutes", 15),
+        Task("Clean your desk", 5),
+        Task("Solve 5 math problems", 20)
+    )
 
-    fun addTask(title: String, reward: Int) {
-        tasks.add(TaskModel(title, reward))
-    }
-
-    fun completeTask(index: Int): Int {
-        val task = tasks[index]
-        task.completed = true
-        return task.rewardMinutes
-    }
 }
