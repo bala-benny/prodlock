@@ -1,5 +1,6 @@
 package com.example.testapp
-
+import com.example.testapp.getForegroundApp
+import com.example.testapp.TaskManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -15,7 +16,8 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        TaskManager.addTask("Study", 30)
+        TaskManager.addTask("Workout", 20)
         setContent {
             TaskScreen()
         }
@@ -25,7 +27,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun TaskScreen() {
 
-    var wallet by remember { mutableStateOf(0) }
+    var wallet by remember { mutableIntStateOf(0) }
     var currentApp by remember { mutableStateOf("Unknown") }
     val context = LocalContext.current
     Column(
@@ -69,3 +71,5 @@ fun TaskScreen() {
         Text("Current App: $currentApp")
     }
 }
+
+

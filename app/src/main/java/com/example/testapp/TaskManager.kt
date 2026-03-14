@@ -1,4 +1,6 @@
-package com.example.testapp.tasks
+package com.example.testapp
+
+import com.example.testapp.tasks.TaskModel
 
 object TaskManager {
 
@@ -13,5 +15,4 @@ object TaskManager {
         task.completed = true
         return task.rewardMinutes
     }
-
 }
