@@ -1,21 +1,22 @@
 package com.example.testapp
 
+import java.util.UUID
+
 data class Task(
+    val id: String = UUID.randomUUID().toString(),
     val name: String,
     val reward: Int
 )
 
 object TaskManager {
 
-    val tasks = mutableListOf(
-        Task("Read 10 pages", 10),
-        Task("Exercise for 10 minutes", 15),
-        Task("Clean your desk", 5),
-        Task("Solve 5 math problems", 20)
-    )
+    val tasks = mutableListOf<Task>()
 
     fun addTask(name: String, reward: Int) {
-        tasks.add(Task(name, reward))
+        tasks.add(Task(name = name, reward = reward))
     }
 
+    fun removeTask(id: String) {
+        tasks.removeAll { it.id == id }
+    }
 }
