@@ -4,6 +4,7 @@ import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.AccessibilityService.GLOBAL_ACTION_HOME
 import android.view.accessibility.AccessibilityEvent
 import android.widget.Toast
+import com.example.testapp.WalletManager
 
 class BlockService : AccessibilityService() {
 
@@ -13,13 +14,26 @@ class BlockService : AccessibilityService() {
 
         if (packageName == "com.google.android.youtube") {
 
-            Toast.makeText(
-                this,
-                "YouTube blocked. Complete tasks to unlock.",
-                Toast.LENGTH_LONG
-            ).show()
+            if (WalletManager.minutes <= 0) {
 
-            performGlobalAction(GLOBAL_ACTION_HOME)
+                Toast.makeText(
+                    this,
+                    "YouTube blocked. Complete tasks to unlock.",
+                    Toast.LENGTH_LONG
+                ).show()
+
+                performGlobalAction(GLOBAL_ACTION_HOME)
+
+            } else {
+
+                WalletManager.minutes -= 1
+
+                Toast.makeText(
+                    this,
+                    "YouTube allowed. Remaining minutes: ${WalletManager.minutes}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
     }
 

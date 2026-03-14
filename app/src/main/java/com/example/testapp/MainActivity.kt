@@ -22,6 +22,17 @@ class MainActivity : ComponentActivity() {
             TaskScreen()
         }
     }
+    fun completeTask() {
+        WalletManager.minutes += 10
+    }
+    @Composable
+    fun TaskButton() {
+        Button(onClick = {
+            completeTask()
+        }) {
+            Text("Complete Task")
+        }
+    }
 }
 
 @Composable
