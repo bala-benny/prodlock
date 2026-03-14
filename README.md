@@ -2,6 +2,9 @@
 
 **Prodlock** is a productivity-focused Android application designed to help users regain control over their screen time. It gamifies the use of distracting apps by requiring users to "earn" their digital leisure time through the completion of real-world tasks.
 
+
+**IMPORTANT** ENABLE Accessibility Service and Display over other apps in their phone settings for the blocking and timer to work. This is important.
+
 ## 🚀 Features
 
 - **Task-Based Rewards**: Create custom tasks (e.g., "Study", "Workout", "Clean Room") and assign them a reward in minutes. Complete tasks to fill your "Screen Time Wallet".
