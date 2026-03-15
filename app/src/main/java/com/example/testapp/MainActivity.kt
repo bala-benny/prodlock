@@ -1,6 +1,10 @@
 package com.example.testapp
 
+import android.content.Intent
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -19,6 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.testapp.ui.theme.TestAppTheme
 import java.util.Locale
 
 class MainActivity : ComponentActivity() {
@@ -26,6 +31,11 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         
+        // Request Notification Permission for Android 13+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requestPermissions(arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 101)
+        }
+
         // Initialize with some tasks if empty
         if (TaskManager.tasks.isEmpty()) {
             TaskManager.addTask("Study", 30)
@@ -33,7 +43,7 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            MaterialTheme {
+            TestAppTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -48,10 +58,7 @@ class MainActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TaskScreen() {
-    // trigger variable to force Compose to refresh when the WalletManager object changes
     var refreshTrigger by remember { mutableIntStateOf(0) }
-    
-    // Create a copy of the list that updates when refreshTrigger changes
     val tasks = remember(refreshTrigger) { TaskManager.tasks.toList() }
     
     var taskName by remember { mutableStateOf("") }
@@ -60,11 +67,9 @@ fun TaskScreen() {
     val context = LocalContext.current
     val analyzer = remember { UsageAnalyzer() }
 
-    // State for the timer
     var timerDisplay by remember { mutableStateOf("") }
     var isTimerActive by remember { mutableStateOf(WalletManager.isTimerRunning) }
 
-    // Usage prediction logic
     val usageList = analyzer.getDailyUsage(context)
     val predictedUsage = if (usageList.isNotEmpty()) {
         val minutes = (usageList[0].totalTimeInForeground / 60000).toInt()
@@ -90,7 +95,6 @@ fun TaskScreen() {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // --- SECTION 1: WALLET STATS & TIMER ---
             item {
                 ElevatedCard(
                     modifier = Modifier.fillMaxWidth(),
@@ -130,13 +134,13 @@ fun TaskScreen() {
                 }
             }
 
-            // --- SECTION 2: SESSION CONTROL ---
             item {
                 if (!isTimerActive) {
                     Button(
                         onClick = {
                             if (WalletManager.minutes > 0) {
                                 WalletManager.startTimer(
+                                    context = context,
                                     onTick = { seconds ->
                                         val m = seconds / 60
                                         val s = seconds % 60
@@ -163,7 +167,7 @@ fun TaskScreen() {
                 } else {
                     OutlinedButton(
                         onClick = {
-                            WalletManager.stopTimer()
+                            WalletManager.stopTimer(context)
                             isTimerActive = false
                             refreshTrigger++
                         },
@@ -175,7 +179,6 @@ fun TaskScreen() {
                 }
             }
 
-            // --- SECTION 3: ADD NEW TASK ---
             item {
                 OutlinedCard(
                     modifier = Modifier.fillMaxWidth()
@@ -225,7 +228,6 @@ fun TaskScreen() {
                 }
             }
 
-            // --- SECTION 4: TASK LIST ---
             item {
                 Text(
                     text = "Your Tasks (Long press to remove)",

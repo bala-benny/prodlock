@@ -2,8 +2,9 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="#80000000"
-    android:padding="4dp">
+    android:background="@drawable/timer_bg"
+    android:paddingHorizontal="12.dp"
+    android:paddingVertical="4.dp">
 
     <TextView
         android:id="@+id/timerText"
@@ -11,6 +12,6 @@
         android:layout_height="wrap_content"
         android:text="00:00"
         android:textColor="#FFFFFF"
-        android:textSize="14sp"
+        android:textSize="18sp"
         android:textStyle="bold" />
 </FrameLayout>

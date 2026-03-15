@@ -1,6 +1,10 @@
 package com.example.testapp
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
 import android.os.CountDownTimer
+import androidx.core.app.NotificationCompat
 
 object WalletManager {
     var minutes: Int = 0
@@ -9,16 +13,21 @@ object WalletManager {
 
     private var timer: CountDownTimer? = null
 
-    fun startTimer(onTick: (Long) -> Unit, onFinish: () -> Unit) {
+    fun startTimer(context: Context, onTick: (Long) -> Unit, onFinish: () -> Unit) {
         if (minutes <= 0 || isTimerRunning) return
 
         isTimerRunning = true
         remainingSeconds = minutes * 60L
+        
+        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        createNotificationChannel(notificationManager)
 
         timer = object : CountDownTimer(remainingSeconds * 1000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 remainingSeconds = millisUntilFinished / 1000
                 minutes = (remainingSeconds / 60).toInt()
+                
+                updateNotification(context, notificationManager)
                 onTick(remainingSeconds)
             }
 
@@ -26,13 +35,41 @@ object WalletManager {
                 isTimerRunning = false
                 minutes = 0
                 remainingSeconds = 0
+                notificationManager.cancel(101)
                 onFinish()
             }
         }.start()
     }
 
-    fun stopTimer() {
+    private fun createNotificationChannel(notificationManager: NotificationManager) {
+        val channel = NotificationChannel(
+            "timer_channel",
+            "Session Timer",
+            NotificationManager.IMPORTANCE_LOW
+        )
+        notificationManager.createNotificationChannel(channel)
+    }
+
+    private fun updateNotification(context: Context, notificationManager: NotificationManager) {
+        val m = remainingSeconds / 60
+        val s = remainingSeconds % 60
+        val timeStr = String.format("%02d:%02d", m, s)
+
+        val notification = NotificationCompat.Builder(context, "timer_channel")
+            .setContentTitle("Session Active")
+            .setContentText("Time remaining: $timeStr")
+            .setSmallIcon(android.R.drawable.ic_dialog_info)
+            .setOngoing(true)
+            .setOnlyAlertOnce(true)
+            .build()
+        
+        notificationManager.notify(101, notification)
+    }
+
+    fun stopTimer(context: Context) {
         timer?.cancel()
         isTimerRunning = false
+        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.cancel(101)
     }
 }
