@@ -3,6 +3,7 @@ package com.example.testapp
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
+import android.os.Build
 import android.os.CountDownTimer
 import androidx.core.app.NotificationCompat
 
@@ -42,12 +43,16 @@ object WalletManager {
     }
 
     private fun createNotificationChannel(notificationManager: NotificationManager) {
-        val channel = NotificationChannel(
-            "timer_channel",
-            "Session Timer",
-            NotificationManager.IMPORTANCE_LOW
-        )
-        notificationManager.createNotificationChannel(channel)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                "timer_channel",
+                "Session Timer",
+                NotificationManager.IMPORTANCE_HIGH
+            ).apply {
+                description = "Shows active session time"
+            }
+            notificationManager.createNotificationChannel(channel)
+        }
     }
 
     private fun updateNotification(context: Context, notificationManager: NotificationManager) {
@@ -59,6 +64,7 @@ object WalletManager {
             .setContentTitle("Session Active")
             .setContentText("Time remaining: $timeStr")
             .setSmallIcon(android.R.drawable.ic_dialog_info)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setOngoing(true)
             .setOnlyAlertOnce(true)
             .build()
