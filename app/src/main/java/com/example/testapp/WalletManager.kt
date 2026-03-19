@@ -13,6 +13,23 @@ object WalletManager {
     var remainingSeconds: Long = 0
 
     private var timer: CountDownTimer? = null
+    private const val PREFS_NAME = "prodlock_prefs"
+    private const val KEY_MINUTES = "wallet_minutes"
+
+    fun load(context: Context) {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        minutes = prefs.getInt(KEY_MINUTES, 0)
+    }
+
+    private fun save(context: Context) {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        prefs.edit().putInt(KEY_MINUTES, minutes).apply()
+    }
+
+    fun addMinutes(context: Context, amount: Int) {
+        minutes += amount
+        save(context)
+    }
 
     fun startTimer(context: Context, onTick: (Long) -> Unit, onFinish: () -> Unit) {
         if (minutes <= 0 || isTimerRunning) return
@@ -36,6 +53,7 @@ object WalletManager {
                 isTimerRunning = false
                 minutes = 0
                 remainingSeconds = 0
+                save(context)
                 notificationManager.cancel(101)
                 onFinish()
             }
@@ -75,6 +93,7 @@ object WalletManager {
     fun stopTimer(context: Context) {
         timer?.cancel()
         isTimerRunning = false
+        save(context)
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.cancel(101)
     }

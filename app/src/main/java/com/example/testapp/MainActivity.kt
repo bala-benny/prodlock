@@ -46,9 +46,13 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         
+        // Initialize data storage
+        WalletManager.load(this)
+        TaskManager.load(this)
+
         if (TaskManager.tasks.isEmpty()) {
-            TaskManager.addTask("Study", 30)
-            TaskManager.addTask("Workout", 20)
+            TaskManager.addTask(this, "Study", 30)
+            TaskManager.addTask(this, "Workout", 20)
         }
 
         setContent {
@@ -341,7 +345,7 @@ fun TaskScreen() {
                         Button(
                             onClick = {
                                 if (taskName.isNotEmpty() && reward.isNotEmpty()) {
-                                    TaskManager.addTask(taskName, reward.toIntOrNull() ?: 0)
+                                    TaskManager.addTask(context, taskName, reward.toIntOrNull() ?: 0)
                                     taskName = ""
                                     reward = ""
                                     refreshTrigger++
@@ -372,11 +376,11 @@ fun TaskScreen() {
                 TaskItem(
                     task = task,
                     onComplete = { rewardAmount ->
-                        WalletManager.minutes += rewardAmount
+                        WalletManager.addMinutes(context, rewardAmount)
                         refreshTrigger++
                     },
                     onDelete = {
-                        TaskManager.removeTask(task.id)
+                        TaskManager.removeTask(context, task.id)
                         refreshTrigger++
                     }
                 )
